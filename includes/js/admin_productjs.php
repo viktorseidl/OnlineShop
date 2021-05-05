@@ -257,6 +257,9 @@ function letsdescripProduct(){
 function ProduktEigenschaften(){
   $(function(){
     var t= $('#Produkt-Beschreibung').val();
+    if(!t){
+      alert('Bitte legen Sie eine Produktbeschreibung fest');
+    }else{
     $.post( "includes/php/admin_product.php", {
       tProduktEigenschaften : t
     }, function(data) {
@@ -266,6 +269,7 @@ function ProduktEigenschaften(){
         $( '.r-tab').html(data);
       }
     });
+    }
   });
 }
 function TextVorschauBeschreibung(){
@@ -290,12 +294,13 @@ function addeigenschaftsel(){
       $( '#Eigenschaftenvorschautab').append('<div class="branding-name">Eigenschaft festlegen</div><p>Hier können Sie die Eigenschaft des Produktes festlegen. Benutzen Sie dafür folgende Syntax (NameEigenschaft:Variante,Variante,...)</p><div class="fieldset"><input type="text" name="peigenschaft" id="peigenschaft" placeholder="NameEigenschaft:Variante,Variante,..." /></div><div class="fieldset"><input type="checkbox" style="width:1em;height:1em;" name="peigenschaftcheck" id="peigenschaftcheck" /> Für zukünftige Produkte speichern?</div>');
     }else{
         $.post( "includes/php/admin_product.php", {
-          TextVorschauBeschreibung : t
+          addeigenschaftsel : t
         }, function(data) {
           if(data=='NO'){
 
           }else{
-            $( '#Eigenschaftenvorschautab').html(data);
+            $( '#Eigenschaftenvorschautab').append(data);
+            $('#seltypeigenschaft').val('n');
           }
         });
     }

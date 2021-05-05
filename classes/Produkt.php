@@ -1,7 +1,7 @@
 <?php
 
 class Produkt{
-  private $_db, 
+  private $_db,
           $_lastid,
           $_data;
 
@@ -39,7 +39,7 @@ class Produkt{
       $colum='id';
     }
 
-    if(is_numeric($where)){
+
       $search=array($colum, '=', $where);
       $data = $this->_db->get($table, $search);
       if($data->count()){
@@ -47,7 +47,29 @@ class Produkt{
         return $this->_data;
       }
       return false;
-    }
+
+  }
+  public function getProduktsList(){
+
+    $data = $this->_db->query("SELECT id,name,p_type from product", array());
+
+      if($data->count()){
+        $this->_data=$data->results();
+        return $this->_data;
+      }
+      return false;
+
+  }
+  public function getEigenschaften(){
+
+    $data = $this->_db->query("SELECT * from p_eigenschaften", array());
+
+      if($data->count()){
+        $this->_data=$data->results();
+        return $this->_data;
+      }
+      return false;
+
   }
   public function checkEigenschaft($where=null){
 

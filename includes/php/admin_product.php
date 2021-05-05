@@ -47,21 +47,17 @@ if($user->hasPermission('admin')){
         Ausgabe des HTML
         */
         if(Input::get('Ausgabe')){
-          if($CatOBJ->getKat()){
-            $select='<option >Auswählen</option>';
+
             $list='';
-          foreach ($CatOBJ->getKat() as $value) {
-            $select.='<option style="color:#000000;" value="'.$value->id.'">'.$value->top_kat.'</option>';
-            $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows"><a>Artikelname</a> | <span>Art-Nr:15454155715</span><i onclick="leteTopkat(\''.$value->id.'\')" class="fas fa-trash-alt"></i><i class="fas fa-edit"></i></div>';
+          foreach ($ProdOBJ->getProduktsList() as $value) {
+            $wert=1000+$value->id;
+            $img=$ProdOBJ->getProdukt('p_images',$value->id);
+            $imgarr=json_decode($img->img_arr);
+            $imgsrc=$imgarr[$img->front_img];
+            $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="" class="fas fa-trash-alt"></i><i class="fas fa-edit"></i></div>';
           }
 
-          }else{
 
-              $select='
-                    <option style="color:#000000;" >Auswählen</option>
-              ';
-
-          }
           $ausgabe='
           <div class="flexi-show">
             <h3><i class="fas fa-hotdog"></i> Produkte</h3><hr>
@@ -370,19 +366,53 @@ if($user->hasPermission('admin')){
         /*
         Ausgabe des HTML NEW PRODUKT 1
         */
-        if(Input::get('tProduktEigenschaften')){
+        if(Input::get('addeigenschaftsel')){
 
-          if($ProdOBJ->updateProduct('product',htmlspecialchars(Session::get('wpid')),array('describing' => htmlspecialchars(Input::get('tProduktEigenschaften'))))!=TRUE){
+          $eigenschaft=$ProdOBJ->getProdukt('p_eigenschaften', htmlspecialchars(Input::get('addeigenschaftsel')));
+          $string=$eigenschaft->name.':';
+          $arrcount=count(json_decode($eigenschaft->e_arr));
+          foreach (json_decode($eigenschaft->e_arr) as $key => $value) {
+            if($key==$arrcount-1){
+              $string.=$value;
+            }else{
+              $string.=$value.',';
+            }
+          }
+          $ausgabe='
+          <div class="branding-name">Eigenschaft festlegen</div><p>Hier können Sie die Eigenschaft des Produktes festlegen.
+          Benutzen Sie dafür folgende Syntax (NameEigenschaft:Variante,Variante,...)</p><div class="fieldset">
+          <input type="text" value="'.$string.'" name="peigenschaft" id="peigenschaft" placeholder="NameEigenschaft:Variante,Variante,..." />
+          </div>
+          ';
+
+          print($ausgabe);
+          exit();
+        }
+        /*
+        Ausgabe des HTML NEW PRODUKT 1
+        */
+        if(Input::get('tProduktEigenschaften')){
+          if(!Input::get('tProduktEigenschaften')){
+            $text='a';
+          }else{
+            $text=Input::get('tProduktEigenschaften');
+          }
+          if($ProdOBJ->updateProduct('product',htmlspecialchars(Session::get('wpid')),array('describing' => htmlspecialchars($text)))!=TRUE){
             print 'NO';
             exit();
           }
+          $opt='';
+          foreach($ProdOBJ->getEigenschaften() as $value){
+            $opt.='<option value="'.$value->name.'">'.$value->name.'</option>';
+          }
+
           $ausgabe='
           <div class="flexi-show">
             <h3><i class="fas fa-hotdog"></i> Produkte</h3><hr>
             <p>Legen Sie Die Eigenschaften Ihres Produktes fest. Wenn der Kunde Möglichkeit der Auswahl haben sollte, dann können Sie diese hier festlegen.</p>
             <div class="branding-name">Produkt-Eigenschaften</div>
             <div class="fieldset">
-            <select id="seltypeigenschaft"><option value="n">Benutzerdefiniert</option></select>
+            <select onchange="addeigenschaftsel()" id="seltypeigenschaft"><option value="n">Benutzerdefiniert</option>'.$opt.'</select>
             <div class="fieldset"><div class="btn-int-admin" onclick="addeigenschaftsel()">Hinzufügen</div></div>
             </div>
             <div class="fieldset" id="Eigenschaftenvorschautab">
@@ -400,6 +430,7 @@ if($user->hasPermission('admin')){
         if(Input::get('savePEigenschaften')){
           $b=count(Input::get('savePEigenschafteninps'));
           if(!array_key_exists('0', Input::get('savePEigenschafteninps'))){
+
             $ProdOBJ->updateProduct('product', htmlspecialchars(Session::get('wpid')), array('eigenschaften' => 'a'));
             $ausgabe='
             <div class="flexi-show">
@@ -452,7 +483,9 @@ if($user->hasPermission('admin')){
                   $full_arr=array();
                   $y=0;
                   foreach(Input::get('savePEigenschafteninps') as $value){
-
+                    if(empty(trim($value))){
+                      unset($value);
+                    }else{
                     $nameEig=explode(':', $value);
                     $arrkey=$nameEig[0];
                     $variant=explode(',',$nameEig[1]);
@@ -473,6 +506,7 @@ if($user->hasPermission('admin')){
                       if($ProdOBJ->checkEigenschaft($nameEig[0])!=TRUE){
                         $ProdOBJ->createProduct('p_eigenschaften',array('name'=>htmlspecialchars($nameEig[0]),'e_arr'=>json_encode($e_arr)));
                       }
+                    }
                     }
                     $y++;
                   }
