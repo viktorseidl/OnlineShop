@@ -1,7 +1,7 @@
 <?php
 
 class Produkt{
-  private $_db,
+  private $_db, 
           $_lastid,
           $_data;
 
@@ -48,6 +48,18 @@ class Produkt{
       }
       return false;
     }
+  }
+  public function checkEigenschaft($where=null){
+
+      $table='p_eigenschaften';
+      $colum='name';
+      $search=array($colum, '=', $where);
+      $data = $this->_db->get($table, $search);
+      if($data->count()){
+        return TRUE;
+      }
+      return FALSE;
+
   }
 
 }

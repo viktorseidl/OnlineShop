@@ -23,25 +23,39 @@ function saveStepOne(){
     var inpValue1=$('input[name="Kats[]"]:checked').map(function(){
                     return this.value;
                   }).get();
+    var check=0;
+    inpValue1.forEach(element => check=Number(check)+Number(element));
+    if(check > 0){
     $.post( "includes/php/admin_product.php", {
       TKats : inpValue1
     }, function(data) {
       $( '.r-tab').html(data);
     });
+    }else{
+    alert('Sie müssen mindestens eine Kategorie auswählen!');
+    }
   });
 }
 function saveStepTwo(){
-
+  var chek=0;
   $(function(){
     var inpValue1=$('input[name="UndKats[]"]:checked').map(function(){
+                    if(this.checked==true){
+                      chek=Number(chek)+Number(1)
+                    }
                     return this.value;
                   }).get();
-    $.post( "includes/php/admin_product.php", {
-      UKats : inpValue1
-    }, function(data) {
 
-      $( '.r-tab').html(data);
-    });
+    if(chek>0){
+        $.post( "includes/php/admin_product.php", {
+          UKats : inpValue1
+        }, function(data) {
+
+          $( '.r-tab').html(data);
+        });
+    }else{
+      alert('Sie müssen mindestens eine Unter-Kategorie auswählen!');
+    }
   });
 }
 function getPriceForm(){
@@ -188,6 +202,7 @@ function abortHandler(event) {
 }
 function saveStepPFour(id) {
 var file = document.getElementById("files").files;
+if(file.length>0){
 // alert(file.name+" | "+file.size+" | "+file.type);
 var formdata = new FormData();
 
@@ -203,9 +218,9 @@ ajax.addEventListener("error", errorHandler, false);
 ajax.addEventListener("abort", abortHandler, false);
 ajax.open("POST", "includes/php/admin_product.php");
 ajax.send(formdata);
-setTimeout(function(){
-  document.getElementById("files").value='';
-}, 4000);
+}else{
+  alert('Bitte wählen Sie mindestens 1 Produkt-Bild aus!');
+}
 }
 function choosepicsuploaded(pid){
   $(function(){
@@ -259,7 +274,7 @@ function TextVorschauBeschreibung(){
     $.post( "includes/php/admin_product.php", {
       TextVorschauBeschreibung : t
     }, function(data) {
-      alert(data);
+
       if(data=='NO'){
 
       }else{
@@ -290,7 +305,7 @@ function savePEigenschaften(){
 
   $(function(){
     var checkboxes=$('input[name="peigenschaftcheck"]').map(function(){
-                    return this.value;
+                  return this.checked;
                   }).get();
     var inps=$('input[name="peigenschaft"]').map(function(){
                     return this.value;
@@ -303,6 +318,101 @@ function savePEigenschaften(){
     }, function(data) {
 
       $( '.r-tab').html(data);
+    });
+  });
+}
+function savelastsettProd(){
+
+  $(function(){
+      var steuer= $('#psteuer').val();
+      var menge= $('#Lagerbestand').val();
+      var gewicht= $('#pGewicht').val();
+      var laenge= $('#plaenge').val();
+      var breite= $('#pbreite').val();
+      var hoehe= $('#phoch').val();
+      var tagswords= $('#ProduktTags').val();
+    $.post( "includes/php/admin_product.php", {
+      steuer    : steuer,
+      menge     : menge,
+      gewicht   : gewicht,
+      laenge    : laenge,
+      breite    : breite,
+      hoehe     : hoehe,
+      tagswords : tagswords,
+    }, function(data) {
+      if(data=='OK'){
+        editProduct();
+      }else if(data=='NO'){
+
+      }else{
+        $( '.r-tab').html(data);
+      }
+    });
+  });
+}
+function changeFImgV(key,eig,img,name){
+  $(function(){
+      var aktimg= $('.fimg'+eig+name).val();
+      if(aktimg==key){
+
+      }else{
+        $('.fimg'+eig+name).val(key);
+        $('.fimgsrc'+eig+name).val(img);
+        $('#'+eig+aktimg+name).css('border-color', '#FFFFFF');
+        $('#'+eig+key+name).css('border-color', '#00FF00');
+      }
+
+  });
+}
+function saveVarianten(){
+
+  $(function(){
+    var VNameKey=$('input[name="variablenamekey"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VFrontImg=$('input[name="frontimgonVSRC"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VProdPreis=$('input[name="VPpreis"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VPneupreis=$('input[name="VPneupreis"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VPdispreis=$('input[name="VPrabattpreis"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VPGewicht=$('input[name="VPgewicht"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VProdlong=$('input[name="VPlong"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VPBreite=$('input[name="VPbreite"]').map(function(){
+                  return this.value;
+                  }).get();
+    var VPHohe=$('input[name="VPhohe"]').map(function(){
+                  return this.value;
+                  }).get();
+
+
+    $.post( "includes/php/admin_product.php", {
+      VNameKey : VNameKey,
+      VFrontImg : VFrontImg,
+      VProdPreis : VProdPreis,
+      VPneupreis : VPneupreis,
+      VPdispreis : VPdispreis,
+      VPGewicht : VPGewicht,
+      VProdlong : VProdlong,
+      VPBreite : VPBreite,
+      VPHohe : VPHohe
+    }, function(data) {
+
+      if(data=='OK'){
+        editProduct();
+      }else{
+
+      }
     });
   });
 }

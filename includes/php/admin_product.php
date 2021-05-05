@@ -178,7 +178,21 @@ if($user->hasPermission('admin')){
           if(Input::get('pformat')=='1'){
               //Einfaches Produkt
               if(Input::get('preisformat')=='1'){
-
+                if(!Input::get('uvppreis')){
+                  $uvppreis=0;
+                }else{
+                  $uvppreis=htmlspecialchars(Input::get('uvppreis'));
+                }
+                if(!Input::get('angebotpreis')){
+                  $rabattpreis=0;
+                }else{
+                  $rabattpreis=htmlspecialchars(Input::get('angebotpreis'));
+                }
+                if(!Input::get('preis')){
+                  $preis=0;
+                }else{
+                  $preis=htmlspecialchars(Input::get('preis'));
+                }
                     //Festpreis
                     if($ProdOBJ->createProduct('product',array(
                       'kat_id' => json_encode(Session::get('wTKat')),
@@ -186,9 +200,10 @@ if($user->hasPermission('admin')){
                       'name' => htmlspecialchars(Input::get('pname')),
                       'p_type' => htmlspecialchars(Input::get('pformat')),
                       'o_type' => htmlspecialchars(Input::get('preisformat')),
-                      'price' => htmlspecialchars(Input::get('preis')),
-                      'newprice' => htmlspecialchars(Input::get('uvppreis')),
-                      'rabattprice' => htmlspecialchars(Input::get('angebotpreis'))
+                      'price' => $preis,
+                      'newprice' => $uvppreis,
+                      'rabattprice' => $rabattpreis,
+                      'created_time' => time()
                     ))!=TRUE){
                       $ausgabe='NO';
                     } $button=$ProdOBJ->lastinsert();
@@ -201,16 +216,34 @@ if($user->hasPermission('admin')){
                     }else {
                       $dbuy=1;
                     }
+                    if(!Input::get('uvppreis')){
+                      $uvppreis=0;
+                    }else{
+                      $uvppreis=htmlspecialchars(Input::get('uvppreis'));
+                    }
+                    if(!Input::get('angebotpreis')){
+                      $rabattpreis=0;
+                    }else{
+                      $rabattpreis=htmlspecialchars(Input::get('angebotpreis'));
+                    }
+                    if(!Input::get('preis')){
+                      $preis=0;
+                    }else{
+                      $preis=htmlspecialchars(Input::get('preis'));
+                    }
                     if($ProdOBJ->createProduct('product',array(
                       'kat_id' => json_encode(Session::get('wTKat')),
                       'undKat_id' => json_encode(Session::get('wUKat')),
                       'name' => htmlspecialchars(Input::get('pname')),
                       'p_type' => htmlspecialchars(Input::get('pformat')),
                       'o_type' => htmlspecialchars(Input::get('preisformat')),
-                      'price' => htmlspecialchars(Input::get('preis')),
+                      'price' => $preis,
                       'dbuy' => $dbuy,
                       'dpreis' => htmlspecialchars(Input::get('direktpreis')),
-                      'auction_time' => htmlspecialchars(Input::get('auctime'))
+                      'auction_time' => htmlspecialchars(Input::get('auctime')),
+                      'newprice' => $uvppreis,
+                      'rabattprice' => $rabattpreis,
+                      'created_time' => time()
                     ))!=TRUE){
                       $ausgabe='NO';
                     } $button=$ProdOBJ->lastinsert();
@@ -218,7 +251,21 @@ if($user->hasPermission('admin')){
               }
 
           }else{
-
+            if(!Input::get('uvppreis')){
+              $uvppreis=0;
+            }else{
+              $uvppreis=htmlspecialchars(Input::get('uvppreis'));
+            }
+            if(!Input::get('angebotpreis')){
+              $rabattpreis=0;
+            }else{
+              $rabattpreis=htmlspecialchars(Input::get('angebotpreis'));
+            }
+            if(!Input::get('preis')){
+              $preis=0;
+            }else{
+              $preis=htmlspecialchars(Input::get('preis'));
+            }
               //Variables Produkt
               if($ProdOBJ->createProduct('product',array(
                 'kat_id' => json_encode(Session::get('wTKat')),
@@ -226,9 +273,10 @@ if($user->hasPermission('admin')){
                 'name' => htmlspecialchars(Input::get('pname')),
                 'p_type' => htmlspecialchars(Input::get('pformat')),
                 'o_type' => htmlspecialchars(Input::get('preisformat')),
-                'price' => htmlspecialchars(Input::get('preis')),
-                'newprice' => htmlspecialchars(Input::get('uvppreis')),
-                'rabattprice' => htmlspecialchars(Input::get('angebotpreis'))
+                'price' => $preis,
+                'newprice' => $uvppreis,
+                'rabattprice' => $rabattpreis,
+                'created_time' => time()
               ))!=TRUE){
                 $ausgabe='NO';
               } $button=$ProdOBJ->lastinsert();
@@ -351,114 +399,392 @@ if($user->hasPermission('admin')){
         */
         if(Input::get('savePEigenschaften')){
           $b=count(Input::get('savePEigenschafteninps'));
-          if($b>0){
-            $x=0;
-            $full_arr=array();
-
-            foreach(Input::get('savePEigenschafteninps') as $value){
-              $remember = (Input::get('savePEigenschaftencheck')[$x]==='on') ? true : false;
-              $nameEig=explode(':', $value);
-              $arrkey=$nameEig[0];
-              $variant=explode(',',$nameEig[1]);
-              $e_arr=array();
-              foreach($variant as $b){
-                if(!trim($b)){
-
-                }else{
-                  array_push($e_arr, $b);
-                }
-              }
-              $innarr=array($arrkey => $e_arr);
-              array_push($full_arr, $innarr);
-              if($remember == true){
-                if($ProdOBJ->getProdukt('p_eigenschaften',$nameEig[0])!=TRUE){
-                  $ProdOBJ->createProduct('p_eigenschaften',array('name'=>$nameEig[0],'e_arr'=>json_encode($e_arr)));
-                }
-              }
-            }
-            if($ProdOBJ->updateProduct('product', htmlspecialchars(Session::get('wpid')), array('eigenschaften' => json_encode($full_arr)))!=TRUE){
-              print 'NO';
-              exit();
-            }else{
-              $ausgabe='
-              <div class="flexi-show">
-                <h3><i class="fas fa-hotdog"></i> Produkte</h3><hr>
-                <p>Legen Sie fest, ob der Preis besteuerbar ist.</p>
-                <div class="branding-name">Besteuerbar</div>
-                <div class="fieldset">
-                <select ><option value="j">Besteuerbar</option><option value="n">nicht Besteuerbar</option></select>
-                </div>
-                <p>Legen Sie fest in welche Länder Sie das Produkt versenden möchten.</p>
-                <div class="branding-name">Länder für Versand</div>
-                <div class="fieldset">
-                <select ><option value="DE">Deutschland</option><option value="BE">Belgien</option></select>
-                </div>
-                <p>Legen Sie die Lagermenge fest.</p>
-                <div class="branding-name">Anzahl im Lagerbestand</div>
-                <div class="fieldset">
-                <input type="text" id="Lagerbestand" placeholder="Geben Sie den Lagerbestand des Produktes an">
-                </div>
-                <p>Geben Sie das Gewicht des Produktes an in Kg Zahl (z.B: 0.500kg).</p>
-                <div class="branding-name">Produkt Gewicht</div>
-                <div class="fieldset">
-                <input type="text" id="ProduktGewicht" placeholder="Geben Sie das Gewicht des Produktes an">
-                </div>
-                <p>Geben Sie die Maßen des Produktes an im folgenden Muster(BxHxT).</p>
-                <div class="branding-name">Produkt Maßen</div>
-                <div class="fieldset">
-                <input type="text" id="ProduktMasen" placeholder="Geben Sie die Maßen des Produktes an">
-                </div>
-                <p>Geben Sie Tag-Wörter für Ihr Produkt an. Diese dienen der Suchmaschinen-Optimierung</p>
-                <div class="branding-name">Tag-Wörter</div>
-                <div class="fieldset">
-                <textarea id="ProduktTags" placeholder="Geben Sie die Tag-Wörter mit Komma getrennt an..."></textarea>
-                </div>
-                <div class="fieldset"><div class="btn-int-admin" onclick="savelastsettProd()">Speichern und weiter >></div></div>
-              </div>
-              ';
-
-              print($ausgabe);
-              exit();
-            }
-          }else{
+          if(!array_key_exists('0', Input::get('savePEigenschafteninps'))){
+            $ProdOBJ->updateProduct('product', htmlspecialchars(Session::get('wpid')), array('eigenschaften' => 'a'));
             $ausgabe='
             <div class="flexi-show">
               <h3><i class="fas fa-hotdog"></i> Produkte</h3><hr>
-              <p>Legen Sie fest, ob der Preis besteuerbar ist.</p>
-              <div class="branding-name">Besteuerbar</div>
+              <p>Legen Sie fest, ob der Preis besteuert werden soll.</p>
+              <div class="branding-name">Steuern</div>
               <div class="fieldset">
-              <select ><option value="j">Besteuerbar</option><option value="n">nicht Besteuerbar</option></select>
+              <select id="psteuer"><option value="1">Besteuert MwSt</option><option value="a">nicht Besteuert</option></select>
               </div>
-              <p>Legen Sie fest in welche Länder Sie das Produkt versenden möchten.</p>
-              <div class="branding-name">Länder für Versand</div>
-              <div class="fieldset">
-              <select ><option value="DE">Deutschland</option><option value="BE">Belgien</option></select>
-              </div>
-              <p>Legen Sie die Lagermenge fest.</p>
+              <p>Legen Sie die Produktmenge fest. Wenn es sich um ein Variables Produkt handelt, wird der Lagerbestand automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Lagermenge auf Variantenebene individualisieren.</p>
               <div class="branding-name">Anzahl im Lagerbestand</div>
               <div class="fieldset">
-              <input type="text" id="Lagerbestand" placeholder="Geben Sie den Lagerbestand des Produktes an">
+              <input type="number" min="0" id="Lagerbestand" placeholder="Geben Sie den Lagerbestand des Produktes an">
               </div>
-              <p>Geben Sie das Gewicht des Produktes an in Kg Zahl (z.B: 0.500kg).</p>
-              <div class="branding-name">Produkt Gewicht</div>
+              <p>Legen Sie das Gewicht des Produktes fest. Wenn es sich um ein Variables Produkt handelt, wird das Gewicht automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie das Gewicht auf Variantenebene individualisieren.</p>
+              <div class="branding-name">Versand Gewicht (Format: 1,000kg)</div>
               <div class="fieldset">
-              <input type="text" id="ProduktGewicht" placeholder="Geben Sie das Gewicht des Produktes an">
+              <input type="text" id="pGewicht" placeholder="Geben Sie das Gewicht des Produktes an">
               </div>
-              <p>Geben Sie die Maßen des Produktes an im folgenden Muster(BxHxT).</p>
-              <div class="branding-name">Produkt Maßen</div>
+              <p>Legen Sie die Packet-Länge fest. Wenn es sich um ein Variables Produkt handelt, wird die Packet-Länge automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Packet-Länge auf Variantenebene individualisieren.</p>
+              <div class="branding-name">Packet Länge (Format: cm)</div>
               <div class="fieldset">
-              <input type="text" id="ProduktMasen" placeholder="Geben Sie die Maßen des Produktes an">
+              <input type="text" id="plaenge" placeholder="Geben Sie die Packet-Länge des Produktes an">
               </div>
-              <p>Geben Sie Tag-Wörter für Ihr Produkt an. Diese dienen der Suchmaschinen-Optimierung</p>
+              <p>Legen Sie die Packet-Breite fest. Wenn es sich um ein Variables Produkt handelt, wird der Lagerbestand automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Packet-Breite auf Variantenebene individualisieren.</p>
+              <div class="branding-name">Packet Breite(Format: cm)</div>
+              <div class="fieldset">
+              <input type="text" id="pbreite" placeholder="Geben Sie die Packet-Breite des Produktes an">
+              </div>
+              <p>Legen Sie die Packet-Höhe fest. Wenn es sich um ein Variables Produkt handelt, wird die Packet-Höhe automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Packet-Höhe auf Variantenebene individualisieren.</p>
+              <div class="branding-name">Packet Höhe(Format: cm)</div>
+              <div class="fieldset">
+              <input type="text" id="phoch" placeholder="Geben Sie die Packet-Höhe des Produktes an">
+              </div>
+              <p>Geben Sie Tag-Wörter für Ihr Produkt an. Diese dienen der Suchmaschinen-Optimierung (Keywords)</p>
               <div class="branding-name">Tag-Wörter</div>
               <div class="fieldset">
-              <textarea id="ProduktTags" placeholder="Geben Sie die Tag-Wörter mit Komma getrennt an..."></textarea>
+              <textarea id="ProduktTags" placeholder="Geben Sie die Tag-Wörter getrennt mit Komma an..."></textarea>
               </div>
               <div class="fieldset"><div class="btn-int-admin" onclick="savelastsettProd()">Speichern und weiter >></div></div>
             </div>
             ';
 
             print($ausgabe);
+            exit();
+
+          }else{
+
+                  $x=0;
+                  $full_arr=array();
+                  $y=0;
+                  foreach(Input::get('savePEigenschafteninps') as $value){
+
+                    $nameEig=explode(':', $value);
+                    $arrkey=$nameEig[0];
+                    $variant=explode(',',$nameEig[1]);
+                    $e_arr=array();
+
+
+                    foreach($variant as $b){
+                      if(!trim($b)){
+
+                      }else{
+                        array_push($e_arr, htmlspecialchars($b));
+                      }
+                    }
+                    $innarr=array($arrkey => $e_arr);
+                    array_push($full_arr, $innarr);
+
+                    if(Input::get('savePEigenschaftencheck')[$y]=="true"){
+                      if($ProdOBJ->checkEigenschaft($nameEig[0])!=TRUE){
+                        $ProdOBJ->createProduct('p_eigenschaften',array('name'=>htmlspecialchars($nameEig[0]),'e_arr'=>json_encode($e_arr)));
+                      }
+                    }
+                    $y++;
+                  }
+                  if(array_key_exists('0',$full_arr)){
+                    $array=json_encode($full_arr);
+                  }else{
+                    $array='a';
+                  }
+                  if($ProdOBJ->updateProduct('product', htmlspecialchars(Session::get('wpid')), array('eigenschaften' => $array))!=TRUE){
+                    print 'NO';
+                    exit();
+                  }else{
+                    $ausgabe='
+                    <div class="flexi-show">
+                      <h3><i class="fas fa-hotdog"></i> Produkte</h3><hr>
+                      <p>Legen Sie fest, ob der Preis besteuert werden soll.</p>
+                      <div class="branding-name">Steuern</div>
+                      <div class="fieldset">
+                      <select id="psteuer"><option value="1">Besteuert MwSt</option><option value="a">nicht Besteuert</option></select>
+                      </div>
+                      <p>Legen Sie die Produktmenge fest. Wenn es sich um ein Variables Produkt handelt, wird der Lagerbestand automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Lagermenge auf Variantenebene individualisieren.</p>
+                      <div class="branding-name">Anzahl im Lagerbestand</div>
+                      <div class="fieldset">
+                      <input type="number" min="0" id="Lagerbestand" placeholder="Geben Sie den Lagerbestand des Produktes an">
+                      </div>
+                      <p>Legen Sie das Gewicht des Produktes fest. Wenn es sich um ein Variables Produkt handelt, wird das Gewicht automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie das Gewicht auf Variantenebene individualisieren.</p>
+                      <div class="branding-name">Versand Gewicht (Format: 1,000kg)</div>
+                      <div class="fieldset">
+                      <input type="text" id="pGewicht" placeholder="Geben Sie das Gewicht des Produktes an">
+                      </div>
+                      <p>Legen Sie die Packet-Länge fest. Wenn es sich um ein Variables Produkt handelt, wird die Packet-Länge automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Packet-Länge auf Variantenebene individualisieren.</p>
+                      <div class="branding-name">Packet Länge (Format: cm)</div>
+                      <div class="fieldset">
+                      <input type="text" id="plaenge" placeholder="Geben Sie die Packet-Länge des Produktes an">
+                      </div>
+                      <p>Legen Sie die Packet-Breite fest. Wenn es sich um ein Variables Produkt handelt, wird der Lagerbestand automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Packet-Breite auf Variantenebene individualisieren.</p>
+                      <div class="branding-name">Packet Breite(Format: cm)</div>
+                      <div class="fieldset">
+                      <input type="text" id="pbreite" placeholder="Geben Sie die Packet-Breite des Produktes an">
+                      </div>
+                      <p>Legen Sie die Packet-Höhe fest. Wenn es sich um ein Variables Produkt handelt, wird die Packet-Höhe automatisch<br>auf die Varianten übernommen. Im nächsten Schritt können Sie die Packet-Höhe auf Variantenebene individualisieren.</p>
+                      <div class="branding-name">Packet Höhe(Format: cm)</div>
+                      <div class="fieldset">
+                      <input type="text" id="phoch" placeholder="Geben Sie die Packet-Höhe des Produktes an">
+                      </div>
+                      <p>Geben Sie Tag-Wörter für Ihr Produkt an. Diese dienen der Suchmaschinen-Optimierung (Keywords)</p>
+                      <div class="branding-name">Tag-Wörter</div>
+                      <div class="fieldset">
+                      <textarea id="ProduktTags" placeholder="Geben Sie die Tag-Wörter getrennt mit Komma an..."></textarea>
+                      </div>
+                      <div class="fieldset"><div class="btn-int-admin" onclick="savelastsettProd()">Speichern und weiter >></div></div>
+                    </div>
+                    ';
+
+                    print($ausgabe);
+                    exit();
+                  }
+
+          }
+
+
+
+        }
+        /*
+        Ausgabe des HTML NEW PRODUKT 1
+        */
+        if(Input::get('steuer')){
+          (Input::get('steuer')=="a")? $steuer=0 : $steuer=htmlspecialchars(Input::get('steuer'));
+          (!Input::get('menge'))? $menge=0 : $menge=htmlspecialchars(Input::get('menge'));
+          (!Input::get('gewicht'))? $gewicht=0 : $gewicht=htmlspecialchars(Input::get('gewicht'));
+          (!Input::get('laenge'))? $laenge=0 : $laenge=htmlspecialchars(Input::get('laenge'));
+          (!Input::get('breite'))? $breite=0 : $breite=htmlspecialchars(Input::get('breite'));
+          (!Input::get('hoehe'))? $hoehe=0 : $hoehe=htmlspecialchars(Input::get('hoehe'));
+          (!Input::get('tagswords'))? $tagswords=0 : $tagswords=htmlspecialchars(Input::get('tagswords'));
+          //gewicht, anzahl, länge, breite, höhe, preis, neupreis, rabattpreis, gallerybild
+
+
+
+          if($tagswords==0){
+            $tagswords=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->name;
+            $tagswords=preg_split('/\s+/', $tagswords);
+            $wordlist='';
+            $addsecondkat=json_decode($ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->undKat_id);
+            foreach ($addsecondkat as $value) {
+
+                $wordlist.=$value.',';
+
+            }
+            $max=count($tagswords);
+            foreach ($tagswords as $key => $value) {
+              if($key==$max-1){
+                $wordlist.=$value;
+              }else{
+                $wordlist.=$value.',';
+              }
+            }
+
+
+            $tagswords=$wordlist;
+          }
+
+          if($ProdOBJ->updateProduct('product', htmlspecialchars(Session::get('wpid')), array(
+            'tax_type' => $steuer,
+            'p_quant' => $menge,
+            'p_weight' => $gewicht,
+            'p_width' => $breite,
+            'p_height' => $hoehe,
+            'p_deep' => $laenge,
+            'p_tagwort' => $tagswords,
+            'variable_arr' => 'a'
+          ))!=TRUE){
+            print 'NO';
+            exit();
+          }else{
+            //Variable ausgabe
+            //Check if variable product for another output, otherwise, jump back to start
+              if($ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->p_type==2){
+                //Variable output
+                if($ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->eigenschaften=="a"){
+                  print 'OK';
+                  exit();
+                }else{
+                    $eigenschaften=json_decode($ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->eigenschaften);
+                    $preis=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->price;
+                    $preisneu=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->newprice;
+                    $preisrabatt=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->rabattprice;
+                    $gewicht=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->p_weight;
+                    $long=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->p_deep;
+                    $breit=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->p_width;
+                    $height=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->p_height;
+                    $quant=$ProdOBJ->getProdukt('product', htmlspecialchars(Session::get('wpid')))->p_quant;
+
+
+                    $anzahlEigenschaften=count($eigenschaften);
+                        $output='';
+                        if($anzahlEigenschaften==1){
+                          foreach ($eigenschaften[0] as $key => $value) {
+                            $name=$key;
+                            foreach ($value as $eig) {
+                              $listing='';
+                              foreach(json_decode($ProdOBJ->getProdukt('p_images', htmlspecialchars(Session::get('wpid')))->img_arr) as $k => $img){
+                                if($k==$ProdOBJ->getProdukt('p_images',htmlspecialchars(Session::get('wpid')))->front_img){
+                                  $listing.='<img src="img/products/'.$img.'" id="'.$eig.$k.$name.'" class="choosegallery" style="border:0.4em solid #00FF00;width:5em;" onclick="changeFImgV(\''.$k.'\',\''.$eig.'\',\''.$img.'\',\''.$name.'\')" />
+                                            <input type="hidden" value="'.$k.'" id="frontimgonV" class="fimg'.$eig.$name.'" />
+                                            <input type="hidden" value="'.$img.'" name="frontimgonVSRC" id="frontimgonVSRC" class="fimgsrc'.$eig.$name.'" />';
+                                }else{
+                                  $listing.='<img src="img/products/'.$img.'" id="'.$eig.$k.$name.'" class="choosegallery" style="width:5em;" onclick="changeFImgV(\''.$k.'\',\''.$eig.'\',\''.$img.'\',\''.$name.'\')" />';
+                                }
+                              }
+                              $output.='
+                              <div class="branding-name">'.$name.': '.$eig.'</div>
+                              <input type="hidden" value="'.$eig.'" name="variablenamekey" id="variablenamekey" />
+                              <div class="fieldset">
+                              '.$listing.'
+                              </div>
+                              <div class="fieldset">
+                              <div class="inpfloater">
+                              <label>Lagerbestand</label>
+                              <input type="number" min="0" name="VPanzahl" value="'.$quant.'" id="VPanzahl" placeholder="Geben Sie den Lagerbestand des Produktes an">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Preis</label>
+                              <input type="text" id="VPpreis" name="VPpreis" value="'.$preis.'" placeholder="Legen Sie den Preis der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>UVP-Preis</label>
+                              <input type="text" id="VPneupreis" name="VPneupreis" value="'.$preisneu.'" placeholder="Legen Sie den UVP-Preis der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Rabatt-Preis</label>
+                              <input type="text" id="VPrabattpreis" name="VPrabattpreis" value="'.$preisrabatt.'" placeholder="Legen Sie den Rabatt-Preis der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Gewicht</label>
+                              <input type="text" id="VPgewicht" name="VPgewicht" value="'.$gewicht.'" placeholder="Legen Sie das Gewicht der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Paket-Länge</label>
+                              <input type="text" id="VPlong" name="VPlong" value="'.$long.'" placeholder="Legen Sie die Paket-Länge der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Paket-Breite</label>
+                              <input type="text" id="VPbreite" name="VPbreite" value="'.$breit.'" placeholder="Legen Sie die Paket-Breite der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Paket-Höhe</label>
+                              <input type="text" id="VPhohe" name="VPhohe" value="'.$height.'" placeholder="Legen Sie die Paket-Höhe der Variante fest">
+                              </div>
+                              </div>';
+                            }
+
+                          }
+                        }elseif ($anzahlEigenschaften==2) {
+                          foreach ($eigenschaften as $key => $value) {
+                            if($key==0){
+                              foreach ($value as $k => $val) {
+                                $name1=$k;
+                              }
+                            }else{
+                              foreach ($value as $k => $val) {
+                                $name2=$k;
+                              }
+                            }
+                          }
+                          foreach ($eigenschaften[0]->$name1 as $k => $val) {
+                            foreach ($eigenschaften[1]->$name2 as $value) {
+                              $listing='';
+                              foreach(json_decode($ProdOBJ->getProdukt('p_images', htmlspecialchars(Session::get('wpid')))->img_arr) as $b => $img){
+                                if($b==$ProdOBJ->getProdukt('p_images',htmlspecialchars(Session::get('wpid')))->front_img){
+                                  $listing.='<img src="img/products/'.$img.'" id="'.$val.'_'.$value.$b.$name1.$name2.'" class="choosegallery" style="border:0.4em solid #00FF00;width:5em;" onclick="changeFImgV(\''.$b.'\',\''.$val.'_'.$value.'\',\''.$img.'\',\''.$name1.$name2.'\')" />
+                                            <input type="hidden" value="'.$b.'" id="frontimgonV" class="fimg'.$val.'_'.$value.$name1.$name2.'" />
+                                            <input type="hidden" value="'.$img.'" name="frontimgonVSRC" id="frontimgonVSRC" class="fimgsrc'.$val.'_'.$value.$name1.$name2.'" />';
+                                }else{
+                                  $listing.='<img src="img/products/'.$img.'" id="'.$val.'_'.$value.$b.$name1.$name2.'" class="choosegallery" style="width:5em;" onclick="changeFImgV(\''.$b.'\',\''.$val.'_'.$value.'\',\''.$img.'\',\''.$name1.$name2.'\')" />';
+                                }
+                              }
+                              $output.='
+                              <div class="branding-name">'.$name1.': '.$val.' / '.$name2.': '.$value.'</div>
+                              <input type="hidden" value="'.$val.'_'.$value.'" name="variablenamekey" id="variablenamekey" />
+                              <div class="fieldset">
+                              '.$listing.'
+                              </div>
+                              <div class="fieldset">
+                              <div class="inpfloater">
+                              <label>Lagerbestand</label>
+                              <input type="number" min="0" name="VPanzahl" value="'.$quant.'" id="VPanzahl" placeholder="Geben Sie den Lagerbestand des Produktes an">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Preis</label>
+                              <input type="text" id="VPpreis" name="VPpreis" value="'.$preis.'" placeholder="Legen Sie den Preis der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>UVP-Preis</label>
+                              <input type="text" id="VPneupreis" name="VPneupreis" value="'.$preisneu.'" placeholder="Legen Sie den UVP-Preis der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Rabatt-Preis</label>
+                              <input type="text" id="VPrabattpreis" name="VPrabattpreis" value="'.$preisrabatt.'" placeholder="Legen Sie den Rabatt-Preis der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Gewicht</label>
+                              <input type="text" id="VPgewicht" name="VPgewicht" value="'.$gewicht.'" placeholder="Legen Sie das Gewicht der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Paket-Länge</label>
+                              <input type="text" id="VPlong" name="VPlong" value="'.$long.'" placeholder="Legen Sie die Paket-Länge der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Paket-Breite</label>
+                              <input type="text" id="VPbreite" name="VPbreite" value="'.$breit.'" placeholder="Legen Sie die Paket-Breite der Variante fest">
+                              </div>
+                              <div class="inpfloater">
+                              <label>Paket-Höhe</label>
+                              <input type="text" id="VPhohe" name="VPhohe" value="'.$height.'" placeholder="Legen Sie die Paket-Höhe der Variante fest">
+                              </div>
+                              </div>';
+                            }
+
+                          }
+                        }elseif ($anzahlEigenschaften==3) {
+                          // code...
+                        }else{
+                          print 'OK';
+                          exit();
+                        }
+
+                        $ausausgabe='<div class="flexi-show">
+                          <h3><i class="fas fa-hotdog"></i> Produkte</h3><hr>
+                          '.$output.'
+                          <div class="fieldset"><div class="btn-int-admin" onclick="saveVarianten()">Speichern und weiter >></div></div>
+                        </div>';
+                        print $ausausgabe;
+                        exit();
+
+
+                }
+
+              }else{
+                //jump back to start
+                print 'OK';
+                exit();
+              }
+          }
+
+        }
+        /*
+        Ausgabe des HTML NEW PRODUKT 1
+        */
+        if(Input::get('VNameKey')){
+          $elements=count(Input::get('VNameKey'));
+          $garr=array();
+          $x=0;
+          foreach (Input::get('VNameKey') as $key => $value) {
+            array_push($garr, array(
+              'id' => htmlspecialchars(Input::get('VNameKey')[$x]),
+              'Fimg' => htmlspecialchars(Input::get('VFrontImg')[$x]),
+              'Preis' => htmlspecialchars(Input::get('VProdPreis')[$x]),
+              'UVP' => htmlspecialchars(Input::get('VPneupreis')[$x]),
+              'Rabatt' => htmlspecialchars(Input::get('VPdispreis')[$x]),
+              'Gewicht' => htmlspecialchars(Input::get('VPGewicht')[$x]),
+              'Long' => htmlspecialchars(Input::get('VProdlong')[$x]),
+              'Breite' => htmlspecialchars(Input::get('VPBreite')[$x]),
+              'Hohe' => htmlspecialchars(Input::get('VPHohe')[$x])
+            ));
+            $x++;
+          }
+          if($ProdOBJ->updateProduct('product', htmlspecialchars(Session::get('wpid')), array('	variable_arr' => json_encode($garr)))!=TRUE){
+            print 'NO';
+            exit();
+          }else{
+
+            print 'OK';
             exit();
           }
 

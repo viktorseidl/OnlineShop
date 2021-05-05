@@ -14,7 +14,7 @@
   border: 4px solid #111111;
   margin-top:2em;
   margin-bottom:2em;
-}
+} 
 .l-tab{
   display: inline-block;
   width: 15%;
@@ -94,6 +94,13 @@
   text-align: center;
   box-shadow:inset 0 0.2em 0.2em rgba(255,255,255,0.2),inset 0 -0.3em 0.2em rgba(0,148,255,0.1);
   cursor: pointer;
+}
+.inpfloater{
+  display: inline-block;
+  width: 30%;
+  float: left;
+  margin-top: 0.8em;
+  margin-left: 2%;
 }
 .fieldset{
   display: inline-block;
