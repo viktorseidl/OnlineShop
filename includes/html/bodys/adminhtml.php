@@ -19,6 +19,9 @@
       <div class="btn-rows-admin" onclick="editProduct()">
         <i class="fas fa-sort-amount-up"></i><a>Bestellungen</a>
       </div>
+      <div class="btn-rows-admin" onclick="editProduct()">
+        <i class="fas fa-paint-brush"></i><a>Layout</a>
+      </div>
     </div>
     <div class="r-tab">
 
