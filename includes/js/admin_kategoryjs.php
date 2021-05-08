@@ -141,7 +141,7 @@ function saveKatsEdit(type,kat){
     });
   });
 }
-function previewSlide(){
+function previewSlideK(){
   $(function(){
 
     const preview = document.getElementById('admin-katlogo');
@@ -157,14 +157,14 @@ function previewSlide(){
     }
   });
 }
-function progressHandler(event) {
+function progressHandlerK(event) {
   $(function(){
       var percent = (event.loaded / event.total) * 100;
       $( '#progressBar' ).val(Math.round(percent));
   });
 }
 
-function completeHandler(event) {
+function completeHandlerK(event) {
   $(function(){
     console.log(event.target.responseText);
     if(event.target.responseText=="NO"){
@@ -173,7 +173,7 @@ function completeHandler(event) {
       $( '#filemsg' ).html('ERROR: Bitte wählen Sie eine Datei aus.');
     }else{
       $( '#filemsg' ).html(event.target.responseText+' wurde hochgeladen');
-      previewSlide();
+      previewSlideK();
     }
       setTimeout(function(){
         $( '#progressBar' ).val('0');
@@ -182,7 +182,7 @@ function completeHandler(event) {
   });
 }
 
-function errorHandler(event) {
+function errorHandlerK(event) {
   $(function(){
     if(event.target.responseText=="NO"){
       $( '#filemsg' ).html('Hochladen fehlgeschlagen');
@@ -198,7 +198,7 @@ function errorHandler(event) {
   });
 }
 
-function abortHandler(event) {
+function abortHandlerK(event) {
   $(function(){
     if(event.target.responseText=="NO"){
       $( '#filemsg' ).html('Hochladen fehlgeschlagen');
@@ -213,7 +213,7 @@ function abortHandler(event) {
       }, 3000);
   });
 }
-function uploadFile(type,kat) {
+function uploadFileK(type,kat) {
 var file = document.getElementById(type).files[0];
 // alert(file.name+" | "+file.size+" | "+file.type);
 var formdata = new FormData();
@@ -221,10 +221,10 @@ formdata.append(type, file);
 formdata.append("typ", type);
 formdata.append("kat", kat);
 var ajax = new XMLHttpRequest();
-ajax.upload.addEventListener("progress", progressHandler, false);
-ajax.addEventListener("load", completeHandler, false);
-ajax.addEventListener("error", errorHandler, false);
-ajax.addEventListener("abort", abortHandler, false);
+ajax.upload.addEventListener("progress", progressHandlerK, false);
+ajax.addEventListener("load", completeHandlerK, false);
+ajax.addEventListener("error", errorHandlerK, false);
+ajax.addEventListener("abort", abortHandlerK, false);
 ajax.open("POST", "includes/php/admin_kategory.php");
 ajax.send(formdata);
 setTimeout(function(){

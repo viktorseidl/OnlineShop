@@ -103,6 +103,7 @@ function abortHandler(event) {
   });
 }
 function uploadFile(type) {
+  
 var file = document.getElementById(type).files[0];
 // alert(file.name+" | "+file.size+" | "+file.type);
 var formdata = new FormData();

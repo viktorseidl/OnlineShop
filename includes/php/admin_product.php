@@ -50,11 +50,18 @@ if($user->hasPermission('admin')){
 
             $list='';
           foreach ($ProdOBJ->getProduktsList() as $value) {
-            $wert=1000+$value->id;
+            $idwert=str_split($value->id);
+            $fullzero=8;
+            $zeros=$fullzero-count($idwert);
+            $wert='X';
+            for ($i = 0; $i < $zeros; $i++) {
+              $wert.='0';
+            }
+            $wert.=$value->id;
             $img=$ProdOBJ->getProdukt('p_images',$value->id);
             $imgarr=json_decode($img->img_arr);
             $imgsrc=$imgarr[$img->front_img];
-            $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="" class="fas fa-trash-alt"></i><i class="fas fa-edit"></i></div>';
+            $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull" class="far fa-copy"></i></div>';
           }
 
 
@@ -68,6 +75,10 @@ if($user->hasPermission('admin')){
             <div class="btn-int-admin" onclick="createNewProduct()">Neues Produkt erstellen</div>
             </div>
             <div class="branding-name">Bestehende Produkte löschen oder bearbeiten</div>
+            <div class="fieldset">
+            <input type="text" id="filterOnNameArtNr" placeholder="Produkt suchen (Name oder Artikel-Nr)"/>
+            <select id="filterOnKat" style="margin-top:0.5em;"><option value="n">Kategorie anzeigen</option></select>
+            </div>
             <div class="existing-sub" id="TopkastListdiv" style="width:90%;">
             '.$list.'
             </div>

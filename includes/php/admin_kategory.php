@@ -15,7 +15,7 @@ if($user->hasPermission('admin')){
             $fileTmpLoc = $_FILES[$type]["tmp_name"];
             $fileType = $_FILES[$type]["type"];
             $fileSize = $_FILES[$type]["size"];
-            $fileErrorMsg = $_FILES[$type]["error"]; 
+            $fileErrorMsg = $_FILES[$type]["error"];
               if(Input::get('typ')){
                     $extention= explode(".", $fileName);
                     $extention= end($extention);
@@ -230,7 +230,7 @@ if($user->hasPermission('admin')){
                     <form id="upload_form" enctype="multipart/form-data" method="post">
                     <label>Background Foto für Kategorie festlegen</label>
                     <div class="fieldset"><img id="admin-katlogo" src="img/'.$top_kat_img.'" /><div class="btn-int-admin" style="margin-top:-2em;" onclick="deleteBKTLogo(\''.Input::get('EditKat').'\')">Löschen</div></div>
-                    <input type="file" name="slider_1" id="slider_1" onchange="uploadFile(\'slider_1\',\''.Input::get('EditKat').'\')"><br>
+                    <input type="file" name="slider_1" id="slider_1" onchange="uploadFileK(\'slider_1\',\''.Input::get('EditKat').'\')"><br>
                     <progress id="progressBar" value="0" max="100"></progress><br>
                     <span id="filemsg"></span>
                     </form>

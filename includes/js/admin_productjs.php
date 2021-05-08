@@ -146,14 +146,14 @@ function saveStepThree(){
   });
 }
 
-function progressHandler(event) {
+function progressHandlerP(event) {
   $(function(){
       var percent = (event.loaded / event.total) * 100;
       $( '#progressBar' ).val(Math.round(percent));
   });
 }
 
-function completeHandler(event) {
+function completeHandlerP(event) {
   $(function(){
 
     if(event.target.responseText=="NO"){
@@ -169,7 +169,7 @@ function completeHandler(event) {
   });
 }
 
-function errorHandler(event) {
+function errorHandlerP(event) {
   $(function(){
     if(event.target.responseText=="NO"){
       $( '#filemsg' ).html('Hochladen fehlgeschlagen');
@@ -185,7 +185,7 @@ function errorHandler(event) {
   });
 }
 
-function abortHandler(event) {
+function abortHandlerP(event) {
   $(function(){
     if(event.target.responseText=="NO"){
       $( '#filemsg' ).html('Hochladen fehlgeschlagen');
@@ -212,10 +212,10 @@ for(var i = 0; i < file.length; i++){
 
 formdata.append("pid", id);
 var ajax = new XMLHttpRequest();
-ajax.upload.addEventListener("progress", progressHandler, false);
-ajax.addEventListener("load", completeHandler, false);
-ajax.addEventListener("error", errorHandler, false);
-ajax.addEventListener("abort", abortHandler, false);
+ajax.upload.addEventListener("progress", progressHandlerP, false);
+ajax.addEventListener("load", completeHandlerP, false);
+ajax.addEventListener("error", errorHandlerP, false);
+ajax.addEventListener("abort", abortHandlerP, false);
 ajax.open("POST", "includes/php/admin_product.php");
 ajax.send(formdata);
 }else{

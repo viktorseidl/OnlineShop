@@ -10,16 +10,16 @@
       <div class="btn-rows-admin" onclick="editProduct()">
         <i class="fas fa-hotdog"></i><a>Produkte</a>
       </div>
-      <div class="btn-rows-admin" onclick="editProduct()">
+      <div class="btn-rows-admin" onclick="()">
         <i class="fas fa-file-invoice-dollar"></i><a>Steuern</a>
       </div>
-      <div class="btn-rows-admin" onclick="editProduct()">
+      <div class="btn-rows-admin" onclick="()">
         <i class="fas fa-shipping-fast"></i><a>Versand</a>
       </div>
-      <div class="btn-rows-admin" onclick="editProduct()">
+      <div class="btn-rows-admin" onclick="()">
         <i class="fas fa-sort-amount-up"></i><a>Bestellungen</a>
       </div>
-      <div class="btn-rows-admin" onclick="editProduct()">
+      <div class="btn-rows-admin" onclick="()">
         <i class="fas fa-paint-brush"></i><a>Layout</a>
       </div>
     </div>
