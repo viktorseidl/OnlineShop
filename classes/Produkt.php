@@ -60,6 +60,31 @@ class Produkt{
       return false;
 
   }
+  public function getProduktsListByKat($kat=null){
+
+    $data = $this->_db->query("SELECT id,name,p_type from product where kat_id LIKE '%$kat%'", array());
+
+      if($data->count()){
+        $this->_data=$data->results();
+        return $this->_data;
+      }
+      return false;
+
+  }
+  public function getProduktsListByArtnrName($name=null){
+    if(is_numeric($name)){
+      $data = $this->_db->query("SELECT id,name,p_type from product where id='$name'", array());
+    }else{
+      $data = $this->_db->query("SELECT id,name,p_type from product where name LIKE '$name%'", array());
+    }
+
+      if($data->count()){
+        $this->_data=$data->results();
+        return $this->_data;
+      }
+      return false;
+
+  }
   public function getEigenschaften(){
 
     $data = $this->_db->query("SELECT * from p_eigenschaften", array());

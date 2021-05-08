@@ -326,6 +326,40 @@ function savePEigenschaften(){
     });
   });
 }
+function filterOnKat(){
+  $(function(){
+    var inps=$('#filterOnKat').val();
+
+    $.post( "includes/php/admin_product.php", {
+      filterOnKat : inps
+    }, function(data) {
+      $( '#TopkastListdiv').html(data);
+      $('#filterOnKat').val('n');
+    });
+  });
+}
+function filterOnNameArtNr(){
+  $(function(){
+    var inps=$('#filterOnNameArtNr').val();
+    if(!inps){
+      filterOnKat()
+    }
+    $.post( "includes/php/admin_product.php", {
+      filterOnNameArtNr : inps
+    }, function(data) {
+      $( '#TopkastListdiv').html(data);
+    });
+  });
+}
+function copyProductFull(pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      copyProductFull : pid
+    }, function(data) {
+      $( '#TopkastListdiv').html(data);
+    });
+  });
+}
 function savelastsettProd(){
 
   $(function(){

@@ -61,9 +61,15 @@ if($user->hasPermission('admin')){
             $img=$ProdOBJ->getProdukt('p_images',$value->id);
             $imgarr=json_decode($img->img_arr);
             $imgsrc=$imgarr[$img->front_img];
-            $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull" class="far fa-copy"></i></div>';
+            $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull(\''.$value->id.'\')" class="far fa-copy"></i></div>';
           }
+          $kats='';
+          if($CatOBJ->getKat()){
+              foreach ($CatOBJ->getKat() as $value) {
 
+                $kats.='<option value="'.$value->id.'">'.$value->top_kat.'</option>';
+              }
+          }
 
           $ausgabe='
           <div class="flexi-show">
@@ -76,8 +82,8 @@ if($user->hasPermission('admin')){
             </div>
             <div class="branding-name">Bestehende Produkte löschen oder bearbeiten</div>
             <div class="fieldset">
-            <input type="text" id="filterOnNameArtNr" placeholder="Produkt suchen (Name oder Artikel-Nr)"/>
-            <select id="filterOnKat" style="margin-top:0.5em;"><option value="n">Kategorie anzeigen</option></select>
+            <input type="text" id="filterOnNameArtNr" onkeyup="filterOnNameArtNr()" placeholder="Produkt suchen (Name oder Artikel-Nr)"/>
+            <select id="filterOnKat" onchange="filterOnKat()" style="margin-top:0.5em;"><option value="n">Kategorie anzeigen</option>'.$kats.'</select>
             </div>
             <div class="existing-sub" id="TopkastListdiv" style="width:90%;">
             '.$list.'
@@ -87,6 +93,124 @@ if($user->hasPermission('admin')){
           </div>
           ';
           echo $ausgabe;
+          exit();
+        }
+        /*
+        Ausgabe des HTML NEW PRODUKT 1
+        */
+        if(Input::get('filterOnKat')){
+          $list='';
+          if(Input::get('filterOnKat')=='n'){
+            foreach ($ProdOBJ->getProduktsList() as $value) {
+              $idwert=str_split($value->id);
+              $fullzero=8;
+              $zeros=$fullzero-count($idwert);
+              $wert='X';
+              for ($i = 0; $i < $zeros; $i++) {
+                $wert.='0';
+              }
+              $wert.=$value->id;
+              $img=$ProdOBJ->getProdukt('p_images',$value->id);
+              $imgarr=json_decode($img->img_arr);
+              $imgsrc=$imgarr[$img->front_img];
+              $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull(\''.$value->id.'\')" class="far fa-copy"></i></div>';
+            }
+          }else{
+              if($ProdOBJ->getProduktsListByKat(htmlspecialchars(Input::get('filterOnKat')))!=false){
+                    foreach ($ProdOBJ->getProduktsListByKat(htmlspecialchars(Input::get('filterOnKat'))) as $value) {
+                      $idwert=str_split($value->id);
+                      $fullzero=8;
+                      $zeros=$fullzero-count($idwert);
+                      $wert='X';
+                      for ($i = 0; $i < $zeros; $i++) {
+                        $wert.='0';
+                      }
+                      $wert.=$value->id;
+                      $img=$ProdOBJ->getProdukt('p_images',$value->id);
+                      $imgarr=json_decode($img->img_arr);
+                      $imgsrc=$imgarr[$img->front_img];
+                      $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull(\''.$value->id.'\')" class="far fa-copy"></i></div>';
+                    }
+              }else{
+                $list ='<div id="TopTabedit" class="existing-sub-rows" style="text-align:center;height:3.5em;">Keine Produkte in Kategorie vorhanden</div>';
+              }
+          }
+
+          echo $list;
+          exit();
+        }
+        /*
+        Ausgabe des HTML NEW PRODUKT 1
+        */
+        if(Input::get('filterOnNameArtNr')){
+          $list='';
+          if(trim(Input::get('filterOnNameArtNr'))==null){
+            foreach ($ProdOBJ->getProduktsList() as $value) {
+              $idwert=str_split($value->id);
+              $fullzero=8;
+              $zeros=$fullzero-count($idwert);
+              $wert='X';
+              for ($i = 0; $i < $zeros; $i++) {
+                $wert.='0';
+              }
+              $wert.=$value->id;
+              $img=$ProdOBJ->getProdukt('p_images',$value->id);
+              $imgarr=json_decode($img->img_arr);
+              $imgsrc=$imgarr[$img->front_img];
+              $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull(\''.$value->id.'\')" class="far fa-copy"></i></div>';
+            }
+          }else{
+              if(is_numeric(Input::get('filterOnNameArtNr'))){
+                $getid=str_split(Input::get('filterOnNameArtNr'));
+                $search='';
+                foreach($getid as $value){
+                  if($value=='0'){
+
+                  }else{
+                    $search.=$value;
+                  }
+                }
+                if($ProdOBJ->getProduktsListByArtnrName(htmlspecialchars($search))!=false){
+                      foreach ($ProdOBJ->getProduktsListByArtnrName(htmlspecialchars($search)) as $value) {
+                        $idwert=str_split($value->id);
+                        $fullzero=8;
+                        $zeros=$fullzero-count($idwert);
+                        $wert='X';
+                        for ($i = 0; $i < $zeros; $i++) {
+                          $wert.='0';
+                        }
+                        $wert.=$value->id;
+                        $img=$ProdOBJ->getProdukt('p_images',$value->id);
+                        $imgarr=json_decode($img->img_arr);
+                        $imgsrc=$imgarr[$img->front_img];
+                        $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull(\''.$value->id.'\')" class="far fa-copy"></i></div>';
+                      }
+                }else{
+                  $list ='<div id="TopTabedit" class="existing-sub-rows" style="text-align:center;height:3.5em;">Keine Produkte in Kategorie vorhanden</div>';
+                }
+              }else{
+                  if($ProdOBJ->getProduktsListByArtnrName(htmlspecialchars(Input::get('filterOnNameArtNr')))!=false){
+                        foreach ($ProdOBJ->getProduktsListByArtnrName(htmlspecialchars(Input::get('filterOnNameArtNr'))) as $value) {
+                          $idwert=str_split($value->id);
+                          $fullzero=8;
+                          $zeros=$fullzero-count($idwert);
+                          $wert='X';
+                          for ($i = 0; $i < $zeros; $i++) {
+                            $wert.='0';
+                          }
+                          $wert.=$value->id;
+                          $img=$ProdOBJ->getProdukt('p_images',$value->id);
+                          $imgarr=json_decode($img->img_arr);
+                          $imgsrc=$imgarr[$img->front_img];
+                          $list.='<div id="TopTabedit'.$value->id.'" class="existing-sub-rows" style="height:3.5em;"><a><div style="display:inline-block;float:left;margin-left:0.3em;width:4em;height:3.5em;background-size:100% 100%;background-position:center;background-repeat:none;background-image:url(\'img/products/'.$imgsrc.'\')"></div> '.$value->name.'</a> | <span>Art-Nr:15454-'.$wert.'</span><i onclick="deleteProduct()" class="fas fa-trash-alt"></i><i onclick="changeProductSettings()" class="fas fa-edit"></i><i onclick="copyProductFull(\''.$value->id.'\')" class="far fa-copy"></i></div>';
+                        }
+                  }else{
+                    $list ='<div id="TopTabedit" class="existing-sub-rows" style="text-align:center;height:3.5em;">Keine Produkte in Kategorie vorhanden</div>';
+                  }
+              }
+          }
+
+          echo $list;
           exit();
         }
         /*
@@ -117,6 +241,52 @@ if($user->hasPermission('admin')){
             '.$list.'
           </div>
           ';
+          echo $ausgabe;
+          exit();
+        }
+        /*
+        Ausgabe des HTML NEW PRODUKT 1
+        */
+        if(Input::get('copyProductFull')){
+          if($ProdOBJ->getProdukt('product',htmlspecialchars(Input::get('copyProductFull')))!=false){
+            $data=$ProdOBJ->getProdukt('product',htmlspecialchars(Input::get('copyProductFull')));
+            if($data->p_type==1){
+              $ptyp='<option value="1" checked="checked">Einfaches Produkt</option><option value="2">Variables Produkt</option>';
+            }else{
+              $ptyp='<option value="1">Einfaches Produkt</option><option value="2" checked="checked">Variables Produkt</option>';
+            }
+            $ausgabe='
+            <div class="flexi-show">
+            <h3><i class="fas fa-hotdog"></i> Produkt-Kopie</h3><hr>
+              <div class="fieldset">
+              <label>Produkt-Titel</label>
+              <input type="text" value="'.$data->name.'- Kopie" placeholder="Produkt-Titel" />
+              </div>
+              <div class="fieldset">
+              <label>Produkt-Typ</label>
+              <select>'.$ptyp.'</select>
+              </div>
+              <div class="fieldset">
+              <label>Produkt-Titel</label>
+              <input type="text" value="'.$data->name.'- Kopie" placeholder="Produkt-Titel" />
+              </div>
+              <div class="fieldset">
+              <label>Produkt-Titel</label>
+              <input type="text" value="'.$data->name.'- Kopie" placeholder="Produkt-Titel" />
+              </div>
+              <div class="fieldset">
+              <label>Produkt-Titel</label>
+              <input type="text" value="'.$data->name.'- Kopie" placeholder="Produkt-Titel" />
+              </div>
+              <div class="fieldset">
+              <label>Produkt-Titel</label>
+              <input type="text" value="'.$data->name.'- Kopie" placeholder="Produkt-Titel" />
+              </div>
+            </div>
+            ';
+          }
+
+
           echo $ausgabe;
           exit();
         }
