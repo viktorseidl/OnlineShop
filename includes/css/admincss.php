@@ -14,7 +14,7 @@
   border: 4px solid #111111;
   margin-top:2em;
   margin-bottom:2em;
-} 
+}
 .l-tab{
   display: inline-block;
   width: 15%;
@@ -280,6 +280,12 @@
   display: inline-block;
   width: 90%;
   margin-bottom: 2em;
+}
+.closerImg{
+  position: absolute;
+  background: #000000;
+  padding: 0.3em;
+  z-index: 1200;
 }
   @media screen and (max-width: 500px) {
     .b-container{

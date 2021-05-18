@@ -1,4 +1,6 @@
 <script type="text/javascript">
+
+
 function editProduct(){
   $(function(){
     $.post( "includes/php/admin_product.php", {
@@ -14,6 +16,16 @@ function createNewProduct(){
       new : '1'
     }, function(data) {
         $( '.r-tab').html(data);
+    });
+  });
+}
+function deleteProduct(pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      deleteProducttpid : pid
+    }, function(data) {
+      
+        $( '#TopTabedit'+pid).css('display','none');
     });
   });
 }
@@ -306,6 +318,78 @@ function addeigenschaftsel(){
     }
   });
 }
+function addEigenschaft(pid){
+  $(function(){
+    var t= $('#seltypeigenschaft').val();
+    var Ecount= $('#EcounterE').val();
+
+    if(t=='n'){
+      $( '#Eigenschaftenvorschautab').append('<div id="branking'+Ecount+'" class="branding-name">Eigenschaft festlegen<i onclick="deleteEigenschaftfull(\''+pid+'\',\''+Ecount+'\')" class="fas fa-trash-alt" style="cursor:pointer;float:right;padding:0.4em;"></i></div><p id="brankingp'+Ecount+'">Hier können Sie die Eigenschaft des Produktes festlegen. Benutzen Sie dafür folgende Syntax (NameEigenschaft:Variante,Variante,...)</p><div id="brankingf'+Ecount+'" class="fieldset"><input type="text" onblur="saveEigenschaftonEDIT(\''+pid+'\',\''+Ecount+'\')" name="peigenschaft'+Ecount+'" id="peigenschaft'+Ecount+'" placeholder="NameEigenschaft:Variante,Variante,..." /></div>');
+      $('#EcounterE').val(parseInt(Ecount)+1);
+    }else{
+        $.post( "includes/php/admin_product.php", {
+          addEigenschaftvalue : t,
+          addEigenschaftpid : pid,
+          addEigenschaftcount : Ecount
+        }, function(data) {
+          if(data=='NO'){
+
+          }else{
+
+            $( '#Eigenschaftenvorschautab').append(data);
+            $('#seltypeigenschaft').val('n');
+            $( '#peigenschaft'+Ecount).css('background', 'rgba(0,255,0,0.5)');
+            setTimeout(function(){
+              $( '#peigenschaft'+Ecount).css('background', 'none');
+            }, 2000);
+            $('#EcounterE').val(parseInt(Ecount)+1);
+          }
+        });
+    }
+  });
+}
+function deleteEigenschaftfull(pid,count){
+  $(function(){
+        var EigInput= $('#peigenschaft'+count).val();
+        $.post( "includes/php/admin_product.php", {
+          deleteEigenschaftfullinp : EigInput,
+          deleteEigenschaftfullpid : pid
+        }, function(data) {
+          if(data=='NO'){
+
+          }else{
+            $( '#branking'+count).html('');
+            $( '#branking'+count).css('display', 'none');
+            $( '#brankingp'+count).html('');
+            $( '#brankingp'+count).css('display', 'none');
+            $( '#brankingf'+count).html('');
+            $( '#brankingf'+count).css('display', 'none');
+          }
+        });
+
+  });
+}
+function saveEigenschaftonEDIT(pid,count){
+  $(function(){
+        var EigInput= $('#peigenschaft'+count).val();
+
+        $.post( "includes/php/admin_product.php", {
+          saveEigenschaftonEDITinp : EigInput,
+          saveEigenschaftonEDITpid : pid
+        }, function(data) {
+          if(data=='NO'){
+
+          }else{
+            $( '#peigenschaft'+count).css('background', 'rgba(0,255,0,0.5)');
+
+            setTimeout(function(){
+              $( '#peigenschaft'+count).css('background', 'none');
+            }, 2000);
+          }
+        });
+
+  });
+}
 function savePEigenschaften(){
 
   $(function(){
@@ -326,6 +410,21 @@ function savePEigenschaften(){
     });
   });
 }
+function aktualVariants(pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      aktualVariantspid : pid
+    }, function(data) {
+      if(data=='OK'){
+
+      }else{
+
+      $( '#Variantenschautabbtn').html('');
+      $( '#Variantenschautab').html(data);
+      }
+    });
+  });
+}
 function filterOnKat(){
   $(function(){
     var inps=$('#filterOnKat').val();
@@ -335,6 +434,26 @@ function filterOnKat(){
     }, function(data) {
       $( '#TopkastListdiv').html(data);
       $('#filterOnKat').val('n');
+    });
+  });
+}
+function toogleONOFF(pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      toogleONOFFpid : pid
+    }, function(data) {
+      if(data=='NO'){
+
+      }else{
+        var res = data.split("_");
+        if(res[1]==1){
+            $("#togleonoffpro"+pid).attr('class', 'fas fa-toggle-on');
+            $("#togleonoffpro"+pid).css('color', '#00FF00');
+        }else{
+            $("#togleonoffpro"+pid).attr('class', 'fas fa-toggle-off');
+            $("#togleonoffpro"+pid).css('color', '#FF0000');
+        }
+      }
     });
   });
 }
@@ -356,10 +475,128 @@ function copyProductFull(pid){
     $.post( "includes/php/admin_product.php", {
       copyProductFull : pid
     }, function(data) {
-      $( '#TopkastListdiv').html(data);
+      editProduct();
     });
   });
 }
+function changeProductSettings(pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      changeProductSettings : pid
+    }, function(data) {
+      $( '.r-tab').html(data);
+    });
+  });
+}
+function deleteThisimg(key,value,pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      deleteThisimgkey : key,
+      deleteThisimgvalue : value,
+      deleteThisimgpid : pid
+    }, function(data) {
+      if(data=='OK'){
+          $( '#img'+key).css('display','none');
+          $( '#bimg'+key).css('display','none');
+      }
+    });
+  });
+}
+function madeitGallery(value,pid){
+  $(function(){
+    $.post( "includes/php/admin_product.php", {
+      madeitGalleryvalue : value,
+      madeitGallerypid : pid
+    }, function(data) {
+      if(data=='OK'){
+          $( '#divprevGalleryIMG').css('background-image', 'url("img/products/'+value+'")');
+
+      }
+    });
+  });
+}
+function SaveStrTarget(pid){
+  var typ=event.target.id;
+  $(function(){
+
+    var inp = $( '#'+typ).val();
+
+    if(!inp){
+
+    }else{
+        $.post( "includes/php/admin_product.php", {
+          SaveStrTargettyp : typ,
+          SaveStrTargetvalue : inp,
+          SaveStrTargetpid : pid
+        }, function(data) {
+          if(data=='OK'){
+              $( '#'+typ).css('background', 'rgba(0,255,0,0.5)');
+              setTimeout(function(){
+                $( '#'+typ).css('background', 'none');
+              }, 2000);
+
+          }
+        });
+    }
+  });
+}checkinPFORMAT
+function checkinPtyp(pid){
+    $(function(){
+
+    var inp = $( '#Produkt-Typ').val();
+    if(inp==2){
+      $('#Variantenschautabbtn').html('<div class="branding-name">Varianten bearbeiten</div><div class="fieldset"><div class="btn-int-admin" onclick="aktualVariants(\''+pid+'\')">Varianten aktualisieren</div></div>');
+    }else{
+      $('#Variantenschautabbtn').html('');
+    }
+    if(!inp){
+
+    }else{
+        $.post( "includes/php/admin_product.php", {
+          checkinPtypvalue : inp,
+          checkinPtyppid : pid
+        }, function(data) {
+          if(data=='NO'){
+          }else{
+          var res = data.split("_");
+          $( '#Produkt-Typ').css('background', 'rgba(0,255,0,0.5)');
+          $( '#Preis-Format').css('background', 'rgba(0,255,0,0.5)');
+          setTimeout(function(){
+            $( '#Produkt-Typ').css('background', 'none');
+            $( '#Preis-Format').css('background', 'none');
+          }, 2000);
+            $( '#Preis-Format').html(res[0]);
+            $( '#div-FormatPINPS').html(res[1]);
+          }
+        });
+    }
+  });
+}
+function checkinPFORMAT(pid){
+    $(function(){
+
+    var inp = $( '#Preis-Format').val();
+
+    if(!inp){
+
+    }else{
+        $.post( "includes/php/admin_product.php", {
+          checkinPFORMATvalue : inp,
+          checkinPFORMATpid : pid
+        }, function(data) {
+          if(data=='NO'){
+          }else{
+            $( '#Preis-Format').css('background', 'rgba(0,255,0,0.5)');
+            setTimeout(function(){
+              $( '#Preis-Format').css('background', 'none');
+            }, 2000);
+            $( '#div-FormatPINPS').html(data);
+          }
+        });
+    }
+  });
+}
+
 function savelastsettProd(){
 
   $(function(){
@@ -403,7 +640,7 @@ function changeFImgV(key,eig,img,name){
 
   });
 }
-function saveVarianten(){
+function saveVarianten(pid){
 
   $(function(){
     var VNameKey=$('input[name="variablenamekey"]').map(function(){
@@ -434,25 +671,48 @@ function saveVarianten(){
                   return this.value;
                   }).get();
 
+    if(pid=='N'){
+      $.post( "includes/php/admin_product.php", {
+        VNameKey : VNameKey,
+        VFrontImg : VFrontImg,
+        VProdPreis : VProdPreis,
+        VPneupreis : VPneupreis,
+        VPdispreis : VPdispreis,
+        VPGewicht : VPGewicht,
+        VProdlong : VProdlong,
+        VPBreite : VPBreite,
+        VPHohe : VPHohe,
+        VPPid : pid
+      }, function(data) {
 
-    $.post( "includes/php/admin_product.php", {
-      VNameKey : VNameKey,
-      VFrontImg : VFrontImg,
-      VProdPreis : VProdPreis,
-      VPneupreis : VPneupreis,
-      VPdispreis : VPdispreis,
-      VPGewicht : VPGewicht,
-      VProdlong : VProdlong,
-      VPBreite : VPBreite,
-      VPHohe : VPHohe
-    }, function(data) {
+        if(data=='OK'){
+          editProduct();
+        }else{
 
-      if(data=='OK'){
-        editProduct();
-      }else{
+        }
+      });
+    }else{
+      $.post( "includes/php/admin_product.php", {
+        VNameKey : VNameKey,
+        VFrontImg : VFrontImg,
+        VProdPreis : VProdPreis,
+        VPneupreis : VPneupreis,
+        VPdispreis : VPdispreis,
+        VPGewicht : VPGewicht,
+        VProdlong : VProdlong,
+        VPBreite : VPBreite,
+        VPHohe : VPHohe,
+        VPPid : pid
+      }, function(data) {
 
-      }
-    });
+        if(data=='OK'){
+          $( '#Variantenschautabbtn').html('<div class="branding-name">Varianten bearbeiten</div><div class="fieldset"><div class="btn-int-admin" onclick="aktualVariants(\''+pid+'\')">Varianten aktualisieren</div></div>');
+          $( '#Variantenschautab').html('');
+        }else{
+
+        }
+      });
+    }
   });
 }
 function setintext(img){
