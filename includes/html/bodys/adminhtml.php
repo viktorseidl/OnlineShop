@@ -10,10 +10,10 @@
       <div class="btn-rows-admin" onclick="editProduct()">
         <i class="fas fa-hotdog"></i><a>Produkte</a>
       </div>
-      <div class="btn-rows-admin" onclick="()">
+      <div class="btn-rows-admin" onclick="Taxes()">
         <i class="fas fa-file-invoice-dollar"></i><a>Steuern</a>
       </div>
-      <div class="btn-rows-admin" onclick="()">
+      <div class="btn-rows-admin" onclick="Versand()">
         <i class="fas fa-shipping-fast"></i><a>Versand</a>
       </div>
       <div class="btn-rows-admin" onclick="()">

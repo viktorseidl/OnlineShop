@@ -20,6 +20,7 @@ if($uState===false){
     include 'includes/js/admin_sliderjs.php';
     include 'includes/js/admin_kategoryjs.php';
     include 'includes/js/admin_productjs.php';
+    include 'includes/js/admin_taxjs.php';
 
     ?>
   </head>
